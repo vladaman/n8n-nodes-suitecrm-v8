@@ -238,6 +238,89 @@ export class SuiteCrm implements INodeType {
 				description: 'Specify the fields you want to request.',
 			},
 			{
+				displayName: 'Filters',
+				name: 'filters',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						mode: [
+							'custom'
+						],
+						resource: [
+							'module',
+						],
+						operation: [
+							'getAll'
+						],
+					},
+				},
+				options: [
+					{
+						displayName: 'Filter Field',
+						name: 'field',
+						values: [
+							{
+								displayName: 'Filter By',
+								name: 'filterBy',
+								type: 'string',
+								default: '',
+								description: 'Name of the field.',
+							},
+							{
+								displayName: 'Operator',
+								name: 'operator',
+								type: 'options',
+								options: [
+									{
+										name: 'Equals',
+										value: 'eq'
+									},
+									{
+										name: 'Not Equals',
+										value: 'neq'
+									},
+									{
+										name: 'Greater than',
+										value: 'gt'
+									},
+									{
+										name: 'Greater or equals than',
+										value: 'gte'
+									},
+									{
+										name: 'Lower than',
+										value: 'lt'
+									},
+									{
+										name: 'Lower or equals than',
+										value: 'lte'
+									},
+									{
+										name: 'Like',
+										value: 'like'
+									},
+								],
+								default: 'eq',
+								description: 'Operator to filter by.',
+							},
+							{
+								displayName: 'Value',
+								name: 'value',
+								type: 'string',
+								default: '',
+								description: 'Value to compare the results with.',
+							},
+						]
+					},
+				],
+				default: {},
+				placeholder: 'Add Filter Condition',
+				description: 'Specify the filter.',
+			},
+			{
 				displayName: 'Paginate',
 				name: 'paginate',
 				type: 'boolean',
@@ -369,126 +452,6 @@ export class SuiteCrm implements INodeType {
 				default: false,
 				description: 'Select true if you want to sort the results in descending order.',
 			},
-			{
-				displayName: 'Filter',
-				name: 'filter',
-				type: 'boolean',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'module'
-						],
-						operation: [
-							'getAll'
-						],
-					},
-				},
-				default: false,
-				description: 'Select true if you want to filter the results.',
-			},
-			{
-				displayName: 'Filter By',
-				name: 'filterBy',
-				type: 'string',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'module'
-						],
-						operation: [
-							'getAll'
-						],
-						filter: [
-							true
-						],
-					},
-				},
-				default: '',
-				description: 'Field to filter by.',
-			},
-			{
-				displayName: 'Operator',
-				name: 'operator',
-				type: 'options',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'module'
-						],
-						operation: [
-							'getAll'
-						],
-						filter: [
-							true,
-						]
-					},
-				},
-				options: [
-					{
-						name: 'Equals',
-						value: 'eq'
-					},
-					{
-						name: 'Not Equals',
-						value: 'neq'
-					},
-					{
-						name: 'Greater than',
-						value: 'gt'
-					},
-					{
-						name: 'Greater or equals than',
-						value: 'gte'
-					},
-					{
-						name: 'Lower than',
-						value: 'lt'
-					},
-					{
-						name: 'Lower or equals than',
-						value: 'lte'
-					},
-					{
-						name: 'Like',
-						value: 'like'
-					},
-				],
-				default: 'eq',
-				description: 'Operator to filter by.',
-			},
-			{
-				displayName: 'Value',
-				name: 'value',
-				type: 'string',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'module'
-						],
-						operation: [
-							'getAll'
-						],
-						filter: [
-							true
-						],
-					},
-				},
-				default: '',
-				description: 'Value to compare the results with.',
-			},
-
 			// ----------------------------------
 			//         relationships
 			// ----------------------------------
@@ -746,7 +709,7 @@ export class SuiteCrm implements INodeType {
 						const fields = this.getNodeParameter('fields', 0) as any;
 						const paginate = this.getNodeParameter('paginate', 0) as boolean;
 						const sort = this.getNodeParameter('sort', 0) as boolean;
-						const filter = this.getNodeParameter('filter', 0) as boolean;
+						const filters = this.getNodeParameter('filters', 0) as any;
 
 						if (paginate) {
 							const results = this.getNodeParameter('resultsPerPage', 0) as number;
@@ -765,11 +728,10 @@ export class SuiteCrm implements INodeType {
 							}
 						}
 
-						if (filter) {
-							const filterBy = this.getNodeParameter('filterBy', 0) as string;
-							const operator = this.getNodeParameter('operator', 0) as string;
-							const value = this.getNodeParameter('value', 0) as string;
-							qs[`filter[${filterBy}][${operator}]`] = value;
+						if (filters.hasOwnProperty('field') && filters.field.length !== 0) {
+							filters.field.forEach((param: { filterBy: string, operator: string, value: string; }) => {
+								qs[`filter[${param.filterBy}][${param.operator}]`] = param.value;
+							});
 						}
 
 						if (fields.hasOwnProperty('field') && fields.field.length !== 0) {
