@@ -1,9 +1,9 @@
 {
   "name": "@digital-boss/n8n-nodes-suitecrm",
-  "version": "1.0.1",
+  "version": "1.1.2",
   "author": "Iñaki Breinbauer",
   "license": "GPL-3.0",
-  "description": "suiteCrm support for n8n",
+  "description": "SuiteCrm v8 support for n8n",
   "keywords": [
     "n8n",
     "nodemation",
@@ -52,7 +52,7 @@
     "n8n-workflow": "^0.71.0",
     "ts-jest": "^27.0.5",
     "tslint": "^6.1.3",
-    "typescript": "~4.4.2"
+    "typescript": "~5.4.0"
   },
   "dependencies": {
     "@types/request": "^2.48.3",

@@ -5,13 +5,13 @@ import {
 
 export class SuiteCrmApi implements ICredentialType {
 	name = 'suiteCrmApi';
-	displayName = 'Suite CRM API';
+	displayName = 'Suite CRM v8 API';
 	properties = [
 		{
-			displayName: 'Suite CRM URL',
+			displayName: 'Suite CRM v8 URL',
 			name: 'suiteCrmUrl',
 			type: 'string' as NodePropertyTypes,
-			placeholder:'https://www.suitecrm.yourdomain.com',
+			placeholder:'https://suitecrm.yourdomain.com',
 			default: '',
 			required: true,
 		},

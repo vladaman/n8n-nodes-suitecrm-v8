@@ -49,7 +49,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 
 	const options: OptionsWithUri = {
 		headers: {
-			Authorization: '',
+			Authorization: ''
 		},
 		method,
 		qs: query,
@@ -70,7 +70,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 		else {
 			throw new Error('Suite CRM credentials are not valid! Make sure to use client credentials.')
 		}
-
+		console.log(`HTTP Call`, options);
 		const responseData = await this.helpers.request(options);
 
 		if (dataKey === undefined) {
@@ -82,7 +82,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 	catch (error: any) {
 		if (error.statusCode === 401) {
 			// Return a clear error
-			throw new Error('The Suite CRM credentials are not valid!');
+			throw new Error(`The Suite CRM credentials are not valid! ErrorCode=${error.statusCode}`);
 		}
 
 		// If that data does not exist for some reason return the actual error

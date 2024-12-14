@@ -41,7 +41,7 @@ export class SuiteCrm implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Standard (to be implemented)',
+						name: 'Standard',
 						value: 'standard',
 					},
 					{
@@ -457,6 +457,10 @@ export class SuiteCrm implements INodeType {
 						name: 'Lower or equals than',
 						value: 'lte'
 					},
+					{
+						name: 'Like',
+						value: 'like'
+					},
 				],
 				default: 'eq',
 				description: 'Operator to filter by.',
@@ -622,6 +626,27 @@ export class SuiteCrm implements INodeType {
 				description: 'Input the link you want to GET-Request.',
 			},
 
+			// ----------------------------------
+			//         quicks
+			// ----------------------------------
+			{
+				displayName: 'Quicks',
+				name: 'quick',
+				type: 'string',
+				displayOptions: {
+					show: {
+						mode: [
+							'custom'
+						],
+						resource: [
+							'link',
+						],
+					},
+				},
+				default: 'create',
+				required: true,
+				description: 'Input the link you want to GET-Request.',
+			},
 		],
 	};
 
@@ -643,7 +668,6 @@ export class SuiteCrm implements INodeType {
 			if (mode === 'standard') {
 
 				throw new Error('Standard Suite CRM is not yet implemented');
-
 			} else if (mode === 'custom') {
 				const resource = this.getNodeParameter('resource', 0) as string;
 
@@ -709,6 +733,8 @@ export class SuiteCrm implements INodeType {
 							fieldsString = fieldsString.slice(1);
 							qs[`fields[${moduleName}]`] = fieldsString;
 						}
+
+						console.error(`Calling /Api/V8/module/${moduleName}/${moduleEntryId}`);
 
 						responseData = await suiteCrmApiRequest.call(this, 'GET', `/Api/V8/module/${moduleName}/${moduleEntryId}`, {}, qs);
 
