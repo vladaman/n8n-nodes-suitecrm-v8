@@ -631,6 +631,7 @@ export class SuiteCrm implements INodeType {
 			if (mode === 'standard') {
 
 				throw new Error('Standard Suite CRM is not yet implemented');
+				
 			} else if (mode === 'custom') {
 				const resource = this.getNodeParameter('resource', 0) as string;
 
@@ -696,8 +697,6 @@ export class SuiteCrm implements INodeType {
 							fieldsString = fieldsString.slice(1);
 							qs[`fields[${moduleName}]`] = fieldsString;
 						}
-
-						console.error(`Calling /Api/V8/module/${moduleName}/${moduleEntryId}`);
 
 						responseData = await suiteCrmApiRequest.call(this, 'GET', `/Api/V8/module/${moduleName}/${moduleEntryId}`, {}, qs);
 
