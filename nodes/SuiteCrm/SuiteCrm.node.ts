@@ -41,7 +41,7 @@ export class SuiteCrm implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Standard',
+						name: 'Standard (to be implemented)',
 						value: 'standard',
 					},
 					{
