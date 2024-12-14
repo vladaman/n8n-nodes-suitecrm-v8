@@ -588,28 +588,6 @@ export class SuiteCrm implements INodeType {
 				required: true,
 				description: 'Input the link you want to GET-Request.',
 			},
-
-			// ----------------------------------
-			//         quicks
-			// ----------------------------------
-			{
-				displayName: 'Quicks',
-				name: 'quick',
-				type: 'string',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'link',
-						],
-					},
-				},
-				default: 'create',
-				required: true,
-				description: 'Input the link you want to GET-Request.',
-			},
 		],
 	};
 
@@ -631,7 +609,7 @@ export class SuiteCrm implements INodeType {
 			if (mode === 'standard') {
 
 				throw new Error('Standard Suite CRM is not yet implemented');
-				
+
 			} else if (mode === 'custom') {
 				const resource = this.getNodeParameter('resource', 0) as string;
 
