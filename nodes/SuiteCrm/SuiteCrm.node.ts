@@ -313,6 +313,23 @@ export class SuiteCrm implements INodeType {
 								default: '',
 								description: 'Value to compare the results with.',
 							},
+							{
+								displayName: 'Field Operator Strategy',
+								name: 'operatorStrategy',
+								type: 'options',
+								options: [
+									{
+										name: 'And',
+										value: 'and'
+									},
+									{
+										name: 'Or',
+										value: 'or'
+									}
+								],
+								default: 'and',
+								description: 'Operator strategy AND/OR.',
+							},
 						]
 					},
 				],
@@ -706,8 +723,9 @@ export class SuiteCrm implements INodeType {
 						}
 
 						if (filters.hasOwnProperty('field') && filters.field.length !== 0) {
-							filters.field.forEach((param: { filterBy: string, operator: string, value: string; }) => {
+							filters.field.forEach((param: { filterBy: string, operator: string, value: string, operatorStrategy: string; }) => {
 								qs[`filter[${param.filterBy}][${param.operator}]`] = param.value;
+								qs[`filter[operator]`] = param.operatorStrategy;
 							});
 						}
 
