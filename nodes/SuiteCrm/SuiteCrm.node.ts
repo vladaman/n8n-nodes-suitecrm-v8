@@ -642,7 +642,7 @@ export class SuiteCrm implements INodeType {
 					if (operation === 'create') {
 
 						body = {
-							data: this.getNodeParameter('data', i) as object
+							data: JSON.parse(this.getNodeParameter('data', i) as string) as object
 						} as IDataObject;
 
 						if (!(body!.data!.hasOwnProperty('type'))) {
