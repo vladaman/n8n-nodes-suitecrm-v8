@@ -1,13 +1,11 @@
 import {
-	IExecuteFunctions,
-	IHookFunctions,
-} from 'n8n-core';
+    IExecuteFunctions,
+    IHookFunctions, IHttpRequestMethods, IHttpRequestOptions,
+} from 'n8n-workflow';
 
 import {
 	IDataObject,
 } from 'n8n-workflow';
-
-import { OptionsWithUri } from 'request';
 
 export interface IProduct {
 	fields: {
@@ -24,7 +22,7 @@ export interface IProduct {
  * @param {object} body
  * @returns {Promise<any>}
  */
-export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunctions, method: string, endpoint: string, body: IDataObject, query?: IDataObject, dataKey?: string): Promise<any> { // tslint:disable-line:no-any
+export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunctions, method: IHttpRequestMethods, endpoint: string, body: IDataObject, query?: IDataObject, dataKey?: string): Promise<any> { // tslint:disable-line:no-any
 	const credentials = await this.getCredentials('suiteCrmApi');
 	if (credentials === undefined) {
 		throw new Error('Please provide credentials');
@@ -34,11 +32,11 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 		query = {};
 	}
 
-	const optionsAuth: OptionsWithUri = {
+	const optionsAuth: IHttpRequestOptions = {
 		headers: {},
 		method: "POST",
 		qs: {},
-		uri: `${credentials.suiteCrmUrl}/Api/access_token`,
+		url: `${credentials.suiteCrmUrl}/Api/access_token`,
 		json: true,
 		body: {
 			grant_type: 'client_credentials',
@@ -47,13 +45,13 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 		}
 	};
 
-	const options: OptionsWithUri = {
+	const options: IHttpRequestOptions = {
 		headers: {
 			Authorization: '',
 		},
-		method,
+		method: method,
 		qs: query,
-		uri: `${credentials.suiteCrmUrl}${endpoint}`,
+		url: `${credentials.suiteCrmUrl}${endpoint}`,
 		json: true
 	};
 
@@ -62,7 +60,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 	}
 
 	try {
-		const responseAuthData = await this.helpers.request(optionsAuth);
+		const responseAuthData = await this.helpers.httpRequest(optionsAuth);
 
 		if (responseAuthData.access_token) {
 			options.headers!.Authorization = `Bearer ${responseAuthData.access_token}`;
@@ -71,7 +69,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 			throw new Error('Suite CRM credentials are not valid! Make sure to use client credentials.')
 		}
 
-		const responseData = await this.helpers.request(options);
+		const responseData = await this.helpers.httpRequest(options);
 
 		if (dataKey === undefined) {
 			return responseData;
