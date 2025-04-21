@@ -1,12 +1,8 @@
 import {
-	IExecuteFunctions,
-} from 'n8n-core';
-
-import {
-	IDataObject,
-	INodeExecutionData,
-	INodeTypeDescription,
-	INodeType,
+    IDataObject,
+    INodeExecutionData,
+    INodeTypeDescription,
+    INodeType, NodeConnectionType, IExecuteFunctions,
 } from 'n8n-workflow';
 
 import {
@@ -21,13 +17,14 @@ export class SuiteCrm implements INodeType {
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		group: ['input'],
 		version: 1,
+        usableAsTool: true,
 		description: 'Consume Suite CRM API.',
 		defaults: {
 			name: 'Suite CRM',
 			color: '#CE2232',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+        inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		credentials: [
 			{
 				name: 'suiteCrmApi',
@@ -608,7 +605,7 @@ export class SuiteCrm implements INodeType {
 		],
 	};
 
-	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: IDataObject[] = [];
 		const length = items.length as unknown as number;
