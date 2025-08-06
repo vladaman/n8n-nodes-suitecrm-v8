@@ -652,13 +652,14 @@ export class SuiteCrm implements INodeType {
 					} else if (operation === 'update') {
 
 						body = {
-							data: this.getNodeParameter('data', i) as object
+							data: JSON.parse(this.getNodeParameter('data', i) as string) as object
 						} as IDataObject;
 
 						if (!(body!.data!.hasOwnProperty('type'))) {
 							// tslint:disable-next-line: no-any
 							(body.data as any).type = this.getNodeParameter('moduleName', 0) as string;
 						}
+
 						if (!(body!.data!.hasOwnProperty('id'))) {
 							// tslint:disable-next-line: no-any
 							(body.data as any).id = this.getNodeParameter('moduleEntryId', 0) as string;
