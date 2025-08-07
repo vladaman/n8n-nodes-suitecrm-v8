@@ -1,8 +1,12 @@
 import {
     IDataObject,
     INodeExecutionData,
+    INodePropertyOptions,
     INodeTypeDescription,
-    INodeType, NodeConnectionType, IExecuteFunctions,
+    INodeType,
+    ILoadOptionsFunctions,
+    NodeConnectionType,
+    IExecuteFunctions,
 } from 'n8n-workflow';
 
 import {
@@ -31,7 +35,7 @@ export class SuiteCrm implements INodeType {
 				required: true,
 			},
 		],
-		properties: [
+    properties: [
 			{
 				displayName: 'Mode',
 				name: 'mode',
@@ -136,23 +140,26 @@ export class SuiteCrm implements INodeType {
 				required: true,
 				description: 'The operation to perform.',
 			},
-			{
-				displayName: 'Module name',
-				name: 'moduleName',
-				type: 'string',
-				displayOptions: {
-					show: {
-						mode: [
-							'custom'
-						],
-						resource: [
-							'module'
-						],
-					},
-				},
-				default: '',
-				description: 'The module to operate on. Is optional for operations create and update if set as "Module name" in data field. Will be overwritten by the "Module name" fields value if set.',
+	{
+		displayName: 'Module name',
+		name: 'moduleName',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getModules',
+		},
+		displayOptions: {
+			show: {
+				mode: [
+					'custom'
+				],
+				resource: [
+					'module'
+				],
 			},
+		},
+		default: '',
+		description: 'The module to operate on. Fetched dynamically via loadOptions.',
+	},
 			{
 				displayName: 'Module entry ID',
 				name: 'moduleEntryId',
@@ -602,8 +609,37 @@ export class SuiteCrm implements INodeType {
 				required: true,
 				description: 'Input the link you want to GET-Request.',
 			},
-		],
-	};
+    ],
+};
+
+    methods = {
+        loadOptions: {
+            /**
+             * Get all available modules from SuiteCRM
+             */
+            async getModules(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+                const modulesObj = await suiteCrmApiRequest.call(
+                    this,
+                    'GET',
+                    '/Api/V8/meta/modules',
+                    {},
+                    {}
+                ) as IDataObject[];
+
+                const modules = modulesObj.data.attributes;
+
+				if (!modules) {
+					console.error('Failed to load modules: API returned no data');
+					return [];
+				}
+
+                return Object.keys(modules).map(moduleName => ({
+                    name: modules[moduleName].label as string,
+                    value: moduleName as string,
+                }));
+            },
+        },
+    };
 
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
@@ -660,9 +696,15 @@ export class SuiteCrm implements INodeType {
 							(body.data as any).type = this.getNodeParameter('moduleName', 0) as string;
 						}
 
+						const moduleEntryId = this.getNodeParameter('moduleEntryId', 0) as string;
+
+						if (!moduleEntryId) {
+							throw new Error('Module entry ID is required for update operation');
+						}
+
 						if (!(body!.data!.hasOwnProperty('id'))) {
 							// tslint:disable-next-line: no-any
-							(body.data as any).id = this.getNodeParameter('moduleEntryId', 0) as string;
+							(body.data as any).id = moduleEntryId;
 						}
 
 						responseData = await suiteCrmApiRequest.call(this, 'PATCH', '/Api/V8/module', body);

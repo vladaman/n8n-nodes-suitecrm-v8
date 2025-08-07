@@ -32,6 +32,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 		query = {};
 	}
 
+    // TODO implement caching of credentials with expiry
 	const optionsAuth: IHttpRequestOptions = {
 		headers: {},
 		method: "POST",
@@ -47,7 +48,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 
 	const options: IHttpRequestOptions = {
 		headers: {
-			Authorization: '',
+			Authorization: `Bearer `,
 		},
 		method: method,
 		qs: query,
@@ -78,6 +79,7 @@ export async function suiteCrmApiRequest(this: IHookFunctions | IExecuteFunction
 		}
 	}
 	catch (error: any) {
+		console.error('SuiteCRM API request error:', error);
 		if (error.statusCode === 401) {
 			// Return a clear error
 			throw new Error('The Suite CRM credentials are not valid!');
