@@ -177,7 +177,7 @@ export class SuiteCrm implements INodeType {
 			{
 				displayName: 'Data',
 				name: 'data',
-				type: 'string',
+				type: 'json',
 				displayOptions: {
 					show: {
 						mode: [
